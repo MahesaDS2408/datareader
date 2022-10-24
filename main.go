@@ -1,20 +1,21 @@
 package main
 
 import (
-	"log"
-	"os"
-
-	"github.com/xuri/excelize/v2"
+	"datareader/entities"
 )
 
 func main() {
-	ep := os.Getenv("EXCEL_PATH")
-	if ep == "" {
-		log.Fatalln("EXCEL_PATH not defined.")
-	}
-	xlsx, err := excelize.OpenFile(ep)
-	if err != nil {
-		log.Fatal("ERROR", err.Error())
-	}
+	var d *entities.Dependencies
+	c := entities.NewYodelConfig()
 
+	// TODO:
+	// - Cache config
+	// - Glob file sconning
+	// - Parsing CSV with Generic thingy
+	// - Split out parsed CSV to JSON
+
+	d = &entities.Dependencies{
+		Config: c,
+	}
+	d.Run()
 }
