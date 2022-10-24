@@ -31,9 +31,8 @@ const DefaultNomorPort uint16 = 8125
 // NewYodelConfig: membuat instance baru dari struct YodelConfig
 func NewYodelConfig() *YodelConfig {
 	// setup lokasi dan type config
-	viper.SetConfigName(".yodelconf")
 	viper.SetConfigType("hcl")
-	viper.AddConfigPath(".")
+	viper.SetConfigFile(".yodelconf.tf")
 
 	// baca koding dari file config
 	err := viper.ReadInConfig()
