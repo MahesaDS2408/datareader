@@ -2,7 +2,6 @@ package entities
 
 import (
 	"encoding/csv"
-	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -34,7 +33,13 @@ func contains(ss []string, s string) bool {
 	return false
 }
 
-func (cwm CSVMapWithMutex) Add(filename string, csm *CSVBlock) {
+func (cwm *CSVMapWithMutex) Add(filename string, csm *CSVBlock) {
+	cwm.Lock()
+	defer cwm.Unlock()
+	cwm.Map[filename] = csm
+}
+
+func (cwm *CSVMapWithMutex) Update(filename string, csm *CSVBlock) {
 	cwm.Lock()
 	defer cwm.Unlock()
 	cwm.Map[filename] = csm
@@ -78,18 +83,14 @@ func NewCSVBlockFromFile(filePath string) (*CSVBlock, error) {
 	f, err := os.Open(filePath)
 	defer f.Close()
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Unable to parse file as CSV for %s : %s", filePath, err.Error()),
-		)
+		return nil, fmt.Errorf("unable to parse file as CSV for %s : %s", filePath, err.Error())
 	}
 
 	// Parse CSV file stream to string of arrays
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Unable to parse file as CSV for %s : %s", filePath, err.Error()),
-		)
+		return nil, fmt.Errorf("unable to parse file as CSV for %s : %s", filePath, err.Error())
 	}
 
 	// Convert all CSV string array to array of HashMap to ease to call the value.
